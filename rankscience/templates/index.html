@@ -1,0 +1,143 @@
+<h1 id="backendproject">Backend Project</h1>
+
+<h2 id="description">Description:</h2>
+
+<p>Backend API written in Flask that queries a MySQL database and returns JSON objects. This project may be hosted on AWS for a short period of time.</p>
+
+<p>SQLAlchemy was not used because the queries were simple and only has GET requests. By choosing not to use an ORM, there are several advantages and disadvantages:</p>
+
+<p>Advantages:</p>
+
+<ul>
+<li>Performance: ORM is sometimes considered middleware that adds overhead.</li>
+
+<li>Greater control over query optimization.</li>
+
+<li>Less dependencies to worry about (Only a thin wrapper for mysqlclient is needed).</li>
+</ul>
+
+<p>Disadvantages:</p>
+
+<ul>
+<li>If table columns names are subject to change, an ORM is more appropriate.</li>
+
+<li>An ORM comes with features that saves time.</li>
+
+<li>Arguably easier to maintain</li>
+</ul>
+
+<h2 id="howitworks">How it works:</h2>
+
+<pre><code>http://hostname/api/v1/shipments
+</code></pre>
+
+<p>Make GET request through the URI with these supported parameters:</p>
+
+<p>company_id: Required for all searches. Must be an integer.</p>
+
+<pre><code>/api/v1/shipments?company_id=2
+</code></pre>
+
+<p>page / per: Pagination of returned results. Default page contains 4 objects. Exceeding end page limits returns object on last page.</p>
+
+<pre><code>api/v1/shipments?company_id=2&amp;page=2&amp;per=2
+</code></pre>
+
+<p>international_transportation_mode: ocean or truck</p>
+
+<pre><code>/api/v1/shipments?company_id=2&amp;international_transportation_mode=ocean
+</code></pre>
+
+<p>sort / direction: Must pass column and direction. Accepted columns for sorting are name, international_departure_date, created_at, updated_at</p>
+
+<pre><code>/api/v1/shipments?company_id=2&amp;sort=international_departure_date&amp;direction=asc
+</code></pre>
+
+<h2 id="tests">Tests:</h2>
+
+<p>Tests are in Ruby; installation instructions and additional information <a href="https://github.com/flexport/glexport-test">here</a>.</p>
+
+<h2 id="filestructure">File structure:</h2>
+
+<pre><code>/rankscience
+    app.py
+    config.py
+    requirements.txt
+    README.md
+    /rankscience
+        __init__.py
+        helpers.py
+        /templates
+            index.html
+    /glexport-test
+        ...
+</code></pre>
+
+<h2 id="tablestructure">Table Structure:</h2>
+
+<p><strong>companies</strong></p>
+
+<pre><code>+------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| id         | int(11)      | NO   | PRI | NULL    | auto_increment |
+| name       | varchar(255) | NO   |     | NULL    |                |
+| created_at | datetime     | NO   |     | NULL    |                |
+| updated_at | datetime     | NO   |     | NULL    |                |
++------------+--------------+------+-----+---------+----------------+
+</code></pre>
+
+<p><strong>products</strong></p>
+
+<pre><code>+-------------+--------------+------+-----+---------+----------------+
+| Field       | Type         | Null | Key | Default | Extra          |
++-------------+--------------+------+-----+---------+----------------+
+| id          | int(11)      | NO   | PRI | NULL    | auto_increment |
+| sku         | varchar(255) | NO   |     | NULL    |                |
+| description | varchar(255) | NO   |     | NULL    |                |
+| company_id  | int(11)      | NO   |     | NULL    |                |
+| created_at  | datetime     | NO   |     | NULL    |                |
+| updated_at  | datetime     | NO   |     | NULL    |                |
++-------------+--------------+------+-----+---------+----------------+
+</code></pre>
+
+<p><strong>shipment_products</strong></p>
+
+<pre><code>+-------------+----------+------+-----+---------+----------------+
+| Field       | Type     | Null | Key | Default | Extra          |
++-------------+----------+------+-----+---------+----------------+
+| id          | int(11)  | NO   | PRI | NULL    | auto_increment |
+| product_id  | int(11)  | NO   |     | NULL    |                |
+| shipment_id | int(11)  | NO   |     | NULL    |                |
+| quantity    | int(11)  | NO   |     | NULL    |                |
+| created_at  | datetime | NO   |     | NULL    |                |
+| updated_at  | datetime | NO   |     | NULL    |                |
++-------------+----------+------+-----+---------+----------------+
+</code></pre>
+
+<p><strong>shipments</strong></p>
+
+<pre><code>+-----------------------------------+--------------+------+-----+---------+----------------+
+| Field                             | Type         | Null | Key | Default | Extra          |
++-----------------------------------+--------------+------+-----+---------+----------------+
+| id                                | int(11)      | NO   | PRI | NULL    | auto_increment |
+| name                              | varchar(255) | NO   |     | NULL    |                |
+| company_id                        | int(11)      | NO   | MUL | NULL    |                |
+| created_at                        | datetime     | NO   |     | NULL    |                |
+| updated_at                        | datetime     | NO   |     | NULL    |                |
+| international_transportation_mode | varchar(255) | NO   |     | NULL    |                |
+| international_departure_date      | date         | NO   |     | NULL    |                |
++-----------------------------------+--------------+------+-----+---------+----------------+
+</code></pre>
+
+<h2 id="todo">To do:</h2>
+
+<ul>
+<li>Compare performance using SQLAlchemy ORM vs passing raw SQL string.</li>
+
+<li>Support searching for multiple company_id at once</li>
+
+<li>Return header metadata on total number of results</li>
+
+<li>Fix paginate behavior to abort if exceeded number of pages</li>
+</ul>

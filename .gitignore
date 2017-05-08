@@ -1,0 +1,9 @@
+*.pyc
+config.py
+__pycache__
+config.rb
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
